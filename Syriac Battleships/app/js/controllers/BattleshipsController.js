@@ -225,3 +225,49 @@
     }  
   );
 }());
+
+// app/js/controllers/BattleshipsController.js
+
+angular.module('battleshipsApp')
+  .controller('BattleshipsController', ['$scope', function($scope) {
+    $scope.currentPrompt = '';
+    $scope.userAnswer = '';
+    $scope.selectedCell = null;
+    
+    // Function to handle cell click
+    $scope.cellClick = function(cell, row, col) {
+      $scope.selectedCell = { row: row, col: col };
+      $scope.currentPrompt = generatePromptForCell(cell);
+      $('#promptModal').modal('show');
+    };
+
+    // Function to check the user's answer
+    $scope.checkAnswer = function() {
+      if ($scope.userAnswer === getCorrectAnswerForCell($scope.selectedCell)) {
+        alert('Correct!');
+        updateCellAsCorrect($scope.selectedCell);
+      } else {
+        alert('Incorrect. Try again.');
+      }
+      $scope.userAnswer = '';
+      $('#promptModal').modal('hide');
+    };
+
+    // Generate the prompt for the given cell
+    function generatePromptForCell(cell) {
+      // Replace this with the actual logic to generate the prompt
+      return `Conjugate the verb ${cell.verb} in ${cell.tense}`;
+    }
+
+    // Get the correct answer for the given cell
+    function getCorrectAnswerForCell(cell) {
+      // Replace this with the actual logic to get the correct answer
+      return 'correctAnswer';
+    }
+
+    // Update the cell as correct
+    function updateCellAsCorrect(cell) {
+      // Replace this with the actual logic to update the cell
+      cell.status = 'correct';
+    }
+  }]);

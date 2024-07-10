@@ -66,36 +66,42 @@
               class="defaultCell"
               ng-repeat="cell in boardLayout.rows[0]"
               ng-style="{ 'backgroundColor':cell.colour }"
+              ng-click="cellClick(cell, 0, $index)"
             ></div>
             <div
               ng-class="{ true : 'firstCell' }[$first]"
               class="defaultCell"
               ng-repeat="cell in boardLayout.rows[1]"
               ng-style="{ 'backgroundColor':cell.colour }"
+              ng-click="cellClick(cell, 1, $index)"
             ></div>
             <div
               ng-class="{ true : 'firstCell' }[$first]"
               class="defaultCell"
               ng-repeat="cell in boardLayout.rows[2]"
               ng-style="{ 'backgroundColor':cell.colour }"
+              ng-click="cellClick(cell, 2, $index)"
             ></div>
             <div
               ng-class="{ true : 'firstCell' }[$first]"
               class="defaultCell"
               ng-repeat="cell in boardLayout.rows[3]"
               ng-style="{ 'backgroundColor':cell.colour }"
+              ng-click="cellClick(cell, 3, $index)"
             ></div>
             <div
               ng-class="{ true : 'firstCell' }[$first]"
               class="defaultCell"
               ng-repeat="cell in boardLayout.rows[4]"
               ng-style="{ 'backgroundColor':cell.colour }"
+              ng-click="cellClick(cell, 4, $index)"
             ></div>
             <div
               ng-class="{ true : 'firstCell' }[$first]"
               class="defaultCell"
               ng-repeat="cell in boardLayout.rows[5]"
               ng-style="{ 'backgroundColor':cell.colour }"
+              ng-click="cellClick(cell, 5, $index)"
             ></div>
           </div>
           <div class="boardWrapper" ng-hide="showBoard">
@@ -297,6 +303,50 @@
         <div class="col-xs-3 col-xs-offset-1" ng-show="showFilteredInputText">
           <div id="divText" ng-style="{ 'color':divTextColor }">
             {{filteredInputText}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prompt Modal -->
+    <div
+      class="modal fade"
+      id="promptModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="promptModalLabel"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="promptModalLabel">
+              Verb Conjugation Prompt
+            </h4>
+          </div>
+          <div class="modal-body">
+            <p>{{currentPrompt}}</p>
+            <input
+              type="text"
+              class="form-control"
+              ng-model="userAnswer"
+              autofocus
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-primary"
+              ng-click="checkAnswer()"
+            >
+              Submit
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>
