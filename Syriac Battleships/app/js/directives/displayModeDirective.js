@@ -24,7 +24,7 @@ angular.module('battleshipsApp')
               scope.dnDisplayMode = element.className;
               switch(scope.dnDisplayMode) {
                 case "mobile" :
-                  scope.dnResetBoard(6);
+                  scope.dnResetBoard(10);
                   break;
                 default:
                   scope.dnResetBoard(12);
