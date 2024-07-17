@@ -129,7 +129,7 @@
         for (const stem of randomDictionarySet) {
             const paradigm = await getParadigm(type, form, tense, stem);
             verbsToReturn.push({ verb: stem, verbs: paradigm });
-            providedVerbs.push(...paradigm);
+            providedVerbs.push(paradigm);
         }
   
         return verbsToReturn;
@@ -151,7 +151,7 @@
         for (const stem of randomDictionarySet) {
             const paradigm = await getParadigm(type, form, tense, stem);
             verbsToReturn.push({ verb: stem, verbs: paradigm });
-            providedVerbs.push(...paradigm);
+            providedVerbs.push(paradigm);
         }
   
         return verbsToReturn;
