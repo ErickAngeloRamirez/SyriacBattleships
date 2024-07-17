@@ -44,7 +44,7 @@
       $scope.showDefinition = function (verbName) {
         var verbData = dictionaryService.getVerbData(verbName, $scope.selectedTense, $scope.selectedForm, $scope.selectedType);
         $scope.verbName = verbName;
-        $scope.meaning = verbData.meaning;
+        // $scope.meaning = verbData.meaning;
         $scope.conjugations = verbData.conjugations;
 
         ngDialog.open({
