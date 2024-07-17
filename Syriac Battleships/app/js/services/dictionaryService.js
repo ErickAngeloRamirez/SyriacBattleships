@@ -112,25 +112,139 @@
   var providedVerbs = [],
     randomDictionarySet = [];
 
+  makeAllVerbs: async function makeAllVerbs(filename, dictionary) {
+      const response = await fetch(filename);
+      const csvText = await response.text();
+      const rows = csvText.trim().split('\n').map(row => row.split(','));
+      
+      const headers = rows.shift();  // First row is the header
+
+      // Fill dictionary with rows using the 3D format 
+      rows.forEach(row => {
+          const type = row.shift();
+          const stem = row.shift();
+          if (!dictionary[type]) { 
+              dictionary[type] = {};
+          }
+          // Add (stem, dict of valid forms) pairs to dictionary based on the stem's type
+          dictionary[type][stem] = [];
+
+          // Add valid forms for the stem based on the remaining information in row
+          row.forEach((value, index) => {
+              if (value === "TRUE") {
+                  dictionary[type][stem].push(headers[index + 2].trim());  // +2 to account for shifted type and stem
+              }
+          });
+      });
+  };
+
+  (async function() {
+      var allVerbs = {};
+      await makeAllVerbs("Syriac Battleships/app/js/services/src copy/syriacVerbs.csv", allVerbs);
+      console.log(allVerbs);
+  })();
+
+  // // Constant Global Variables
+  // const ALL_VERBS = {};   // to be filled by the makeAllVerbs function
+  // const ALL_TYPES = ["strong", "I’nun", "I’alaph", "I’yod", "II’alaph", "hollow", "geminate", 
+  //                   "III’weak", "irregular"];
+  // const ALL_FORMS = ["pʿal", "ethpʿel", "paʿʿel", "ethpaʿʿal", "aphʿel", "ettaphʿal"];  // TODO: add "quadraliteral"?
+  // const ALL_TENSES = ["perfect", "imperfect", "imperative", "active-participle", "passive-participle", "infinitive"];
+  // const ALL_PGNs = ["1CS", "1CP", "2MS", "2FS", "2MP", "2FP", "3MS", "3FS", "3MP", "3FP", "MS", "FS", "MP", "FP", ""];
+
+  // // Regular Global Variables
+  // let QUESTIONS = [];   // array to store the generated practice problems
+  // let USER_SOLUTIONS = [];  // array to store user answers to QUESTIONS
+  // let CORRECT_SOLUTIONS = [];   // array to store the correct answers to QUESTIONS 
+  // let CORRECTIONS = [];   // array to store whether USER_SOLUTIONS are correct, or incorrect
+  // let NUM_QUESTIONS = 1;    // number of problems to generate, defaults to 1
+  // let FILTERS = [];     // array to store user-picked filters, specifying what problem types to generate
+  // let MAX_NUM_QUESTIONS = 0; // maximum possible number of problems given FILTERS
+  // let CAN_GENERATE_QUESTIONS = true; // boolean indicating whether any problems can be generated given FILTERS
+  // let VERBS = {};    // array to store the usable verbs, given FILTERS
+  // let TYPES = [];      // array to store usable verb types, given FILTERS
+  // let TYPES_with_PROBS = [];    // similar to TYPES, but each element is also paired to a probability
+  // let FORMS = [];       // array to store usable verb forms, given FILTERS
+  // let FORMS_with_PROBS = [];    // similar to FORMS, but each element is also paired to a probability
+  // let TENSES = [];      // array to store usable verb tenses, given FILTERS
+  // let TENSES_with_PROBS = [];   // similar to TENSES, but each element is also paired to a probability
+  // let PGN = ALL_PGNs;   // array to store usable number-person-gender combos
+
+  // /**
+  //  * class: Prompt
+  //  * 
+  //  * A Prompt object stores the information needed to generate a problem, which includes a stem, its type, form, 
+  //  * tense, and number-gender-person (pgn). By default, all of a Prompt's parameters are set to null. 
+  //  */
+  // class Prompt {
+  //   constructor() {
+  //       this.stem = null;
+  //       this.type = null;
+  //       this.form = null;
+  //       this.tense = null;
+  //       this.pgn = null;
+  //   }
+  // }
 
   return {
-    getVerbs: function getVerbs (tense, number) {
+
+    getParadigm: async function getParadigm(type, form, tense, stem) {
+      const filename = `Syriac Battleships/app/js/services/src copy/${type}Paradigm/${stem}.csv`;  // csv paradigm chart for provided verb
+      const response = await fetch(filename);
+      const csvText = await response.text();
+      const rows = csvText.trim().split('\n').map(row => row.split(','));
+      
+      const paradigm = [];
+
+      // Format each row as an array of (form, conjugation) pairs given a tense and pgn
+      const header = rows.shift();  // First row is the header
+      const formsHeader = header.slice(2);  // an array of the verb forms in the chart
+      rows.forEach(row => {
+          const rowTense = row.shift();  // get current row's tense parameter
+          if (rowTense != tense) {
+            return;
+          }
+          const rowPGN = row.shift();    // get current row's PGN parameter
+          formsHeader.forEach((currForm, idx) => {
+            if (currForm != form) {
+              return;
+            }
+            const conjugation = row[idx + 2];
+            // paradigm[rowPGN] = conjugation;
+            paradigm.push(conjugation);
+            // include alt conjugations
+          });
+
+      // // Label each row's conjugations using the corresponding verb forms
+      // Object.keys(paradigm).forEach(rowKey => {
+      //     paradigm[rowKey] = formsHeader.reduce((acc, form, idx) => {
+      //         acc[form] = paradigm[rowKey][idx];
+      //         return acc;
+      //     }, {});
+      });
+      return paradigm;
+    },
+
+    getVerbs: function getVerbs (tense, form, type, number) {
       var verbsToReturn = [];
       providedVerbs = [];
       // var slicedVerbsFromDiciionary = verbDictionary.slice(-number);
-      randomDictionarySet = getRandomSubarray(verbDictionary, number);
-      angular.forEach(randomDictionarySet, function (entry) {
-        switch (tense) {
-          case "present": verbsToReturn.push({ verb: entry.verb, verbs: entry.present });
-            providedVerbs.push.apply(providedVerbs, entry[tense]);
-            break;
-          case "imperfect": verbsToReturn.push({ verb: entry.verb, verbs: entry.imperfect });
-            providedVerbs.push.apply(providedVerbs, entry[tense]);
-            break;
-          case "preterite": verbsToReturn.push({ verb: entry.verb, verbs: entry.preterite });
-            providedVerbs.push.apply(providedVerbs, entry[tense]);
-            break;
-        }
+      // randomDictionarySet = getRandomSubarray(verbDictionary, number);
+
+      const stems = Object.keys(allVerbs[type]).filter(stem => {
+        return allVerbs[type][stem].includes(form);
+      });
+
+      // make sure enough stems !!!
+
+      // const shuffled = stems.sort(() => 0.5 - Math.random());
+      // randomDictionarySet = shuffled.slice(0, number);
+      randomDictionarySet = getRandomSubarray(stems, number);
+
+      angular.forEach(randomDictionarySet, function (stem) {
+        paradigm = getParadigm(type, form, tense, stem);
+        verbsToReturn.push({ verb: stem, verbs: paradigm })
+        providedVerbs.push.apply(providedVerbs, paradigm);
       });
       // todo: getRandom 12 verbs
       return verbsToReturn;
@@ -138,32 +252,39 @@
     getProvidedVerbs: function () {
       return providedVerbs;
     },
-    getSwitchedVerbs: function getVerbs (tense, number) {
+    getSwitchedVerbs: function getVerbs (tense, form, type, number) {
       var verbsToReturn = [];
       providedVerbs = [];
-      angular.forEach(randomDictionarySet, function (entry) {
-        switch (tense) {
-          case "present": verbsToReturn.push({ verb: entry.verb, verbs: entry.present });
-            providedVerbs.push.apply(providedVerbs, entry[tense]);
-            break;
-          case "imperfect": verbsToReturn.push({ verb: entry.verb, verbs: entry.imperfect });
-            providedVerbs.push.apply(providedVerbs, entry[tense]);
-            break;
-          case "preterite": verbsToReturn.push({ verb: entry.verb, verbs: entry.preterite });
-            providedVerbs.push.apply(providedVerbs, entry[tense]);
-            break;
-        }
+      // var slicedVerbsFromDiciionary = verbDictionary.slice(-number);
+      // randomDictionarySet = getRandomSubarray(verbDictionary, number);
+
+      const stems = Object.keys(allVerbs[type]).filter(stem => {
+        return allVerbs[type][stem].includes(form);
       });
+
+      // make sure enough stems !!!
+
+      // const shuffled = stems.sort(() => 0.5 - Math.random());
+      // randomDictionarySet = shuffled.slice(0, number);
+      randomDictionarySet = getRandomSubarray(stems, number);
+
+      angular.forEach(randomDictionarySet, function (stem) {
+        paradigm = getParadigm(type, form, tense, stem);
+        verbsToReturn.push({ verb: stem, verbs: paradigm })
+        providedVerbs.push.apply(providedVerbs, paradigm);
+      });
+      // todo: getRandom 12 verbs
       return verbsToReturn;
     },
-    getVerbData: function (verb, tense) {
+    getVerbData: function (verb, tense, form, type) {
       var returnVerbData = {};
-      angular.forEach(verbDictionary, function (entry) {
-        if (entry.verb === verb) {
-          returnVerbData.meaning = entry.meaning;
-          returnVerbData.conjugations = entry[tense];
-        }
-      });
+
+      // angular.forEach(verbDictionary, function (entry) {
+      //   if (entry.verb === verb) {
+      //     // returnVerbData.meaning = entry.meaning;
+      returnVerbData.conjugations = getParadigm(type, form, tense, verb);
+      //   }
+      // });
       return returnVerbData;
     }
   };
