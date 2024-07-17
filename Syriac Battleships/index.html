@@ -102,6 +102,30 @@
               ng-repeat="cell in boardLayout.rows[5]"
               ng-style="{ 'backgroundColor':cell.colour }"
             ></div>
+            <div
+              ng-class="{ true : 'firstCell' }[$first]"
+              class="defaultCell"
+              ng-repeat="cell in boardLayout.rows[6]"
+              ng-style="{ 'backgroundColor':cell.colour }"
+            ></div>
+            <div
+              ng-class="{ true : 'firstCell' }[$first]"
+              class="defaultCell"
+              ng-repeat="cell in boardLayout.rows[7]"
+              ng-style="{ 'backgroundColor':cell.colour }"
+            ></div>
+            <div
+              ng-class="{ true : 'firstCell' }[$first]"
+              class="defaultCell"
+              ng-repeat="cell in boardLayout.rows[8]"
+              ng-style="{ 'backgroundColor':cell.colour }"
+            ></div>
+            <div
+              ng-class="{ true : 'firstCell' }[$first]"
+              class="defaultCell"
+              ng-repeat="cell in boardLayout.rows[9]"
+              ng-style="{ 'backgroundColor':cell.colour }"
+            ></div>
           </div>
           <div class="boardWrapper" ng-hide="showBoard">
             <div
