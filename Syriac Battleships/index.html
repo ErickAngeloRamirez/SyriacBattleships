@@ -73,35 +73,30 @@
               class="defaultCell"
               ng-repeat="cell in boardLayout.rows[1]"
               ng-style="{ 'backgroundColor':cell.colour }"
-              ng-click="cellClick(cell, 1, $index)"
             ></div>
             <div
               ng-class="{ true : 'firstCell' }[$first]"
               class="defaultCell"
               ng-repeat="cell in boardLayout.rows[2]"
               ng-style="{ 'backgroundColor':cell.colour }"
-              ng-click="cellClick(cell, 2, $index)"
             ></div>
             <div
               ng-class="{ true : 'firstCell' }[$first]"
               class="defaultCell"
               ng-repeat="cell in boardLayout.rows[3]"
               ng-style="{ 'backgroundColor':cell.colour }"
-              ng-click="cellClick(cell, 3, $index)"
             ></div>
             <div
               ng-class="{ true : 'firstCell' }[$first]"
               class="defaultCell"
               ng-repeat="cell in boardLayout.rows[4]"
               ng-style="{ 'backgroundColor':cell.colour }"
-              ng-click="cellClick(cell, 4, $index)"
             ></div>
             <div
               ng-class="{ true : 'firstCell' }[$first]"
               class="defaultCell"
               ng-repeat="cell in boardLayout.rows[5]"
               ng-style="{ 'backgroundColor':cell.colour }"
-              ng-click="cellClick(cell, 5, $index)"
             ></div>
           </div>
           <div class="boardWrapper" ng-hide="showBoard">
@@ -252,8 +247,8 @@
                   role="menuitem"
                   tabindex="-1"
                   href="#"
-                  ng-click="switchTense('present')"
-                  >Present</a
+                  ng-click="switchTense('perfect')"
+                  >Perfect</a
                 >
               </li>
               <li role="presentation">
@@ -265,13 +260,157 @@
                   >Imperfect</a
                 >
               </li>
+            </ul>
+          </div>
+          <div class="dropdown hideOnPhone">
+            <button
+              class="btn btn-default dropdown-toggle"
+              type="button"
+              id="dropdownMenu1"
+              data-toggle="dropdown"
+              aria-expanded="true"
+            >
+              Change Form
+              <span class="caret"></span>
+            </button>
+            <ul
+              class="dropdown-menu"
+              role="menu"
+              aria-labelledby="dropdownMenu1"
+            >
               <li role="presentation">
                 <a
                   role="menuitem"
                   tabindex="-1"
                   href="#"
-                  ng-click="switchTense('preterite')"
-                  >Preterite</a
+                  ng-click="switchForm('pʿal')"
+                  >pʿal</a
+                >
+              </li>
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchForm('ethpʿel')"
+                  >ethpʿel</a
+                >
+              </li>
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchForm('paʿʿel')"
+                  >paʿʿel</a
+                >
+              </li>
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchForm('ethpaʿʿal')"
+                  >ethpaʿʿal</a
+                >
+              </li>
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchForm('aphʿel')"
+                  >aphʿel</a
+                >
+              </li>
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchForm('ettaphʿal')"
+                  >ettaphʿal</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="dropdown hideOnPhone">
+            <button
+              class="btn btn-default dropdown-toggle"
+              type="button"
+              id="dropdownMenu1"
+              data-toggle="dropdown"
+              aria-expanded="true"
+            >
+              Change Type
+              <span class="caret"></span>
+            </button>
+            <ul
+              class="dropdown-menu"
+              role="menu"
+              aria-labelledby="dropdownMenu1"
+            >
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchType('strong')"
+                  >strong</a
+                >
+              </li>
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchType('I’nun')"
+                  >I’nun</a
+                >
+              </li>
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchType('I’alaph')"
+                  >I’alaph</a
+                >
+              </li>
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchType('I’yod')"
+                  >I’yod</a
+                >
+              </li>
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchType('II’alaph')"
+                  >II’alaph</a
+                >
+              </li>
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchType('hollow')"
+                  >hollow</a
+                >
+              </li>
+              <li role="presentation">
+                <a
+                  role="menuitem"
+                  tabindex="-1"
+                  href="#"
+                  ng-click="switchType('geminate')"
+                  >geminate</a
                 >
               </li>
             </ul>
@@ -308,54 +447,9 @@
       </div>
     </div>
 
-    <!-- Prompt Modal -->
-    <div
-      class="modal fade"
-      id="promptModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="promptModalLabel"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" id="promptModalLabel">
-              Verb Conjugation Prompt
-            </h4>
-          </div>
-          <div class="modal-body">
-            <p>{{currentPrompt}}</p>
-            <input
-              type="text"
-              class="form-control"
-              ng-model="userAnswer"
-              autofocus
-            />
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-primary"
-              ng-click="checkAnswer()"
-            >
-              Submit
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <script src="app/js/app.js"></script>
     <script src="app/js/services/boardService.js"></script>
     <script src="app/js/services/dictionaryService.js"></script>
-
     <script src="app/js/controllers/BattleshipsController.js"></script>
     <script src="app/js/directives/displayModeDirective.js"></script>
     <script src="app/js/ngDialog/ngDialog.js"></script>
