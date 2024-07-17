@@ -17,11 +17,13 @@
         interval = undefined;
       });
 
-      function isUpperCase (char) {
-        return !!/[A-Z]/.exec(char[0]);
-      }
+      // function isUpperCase (char) {
+      //   return !!/[A-Z]/.exec(char[0]);
+      // }
 
-      $scope.selectedTense = "present";
+      $scope.selectedTense = "perfect";
+      $scope.selectedForm = "pʿal"
+      $scope.selectedType = "strong"
       $scope.showBoard = true;
       $scope.showCompleted = false;
       $scope.movesCount = 0;
@@ -40,7 +42,7 @@
       $scope.tocadoColour = 'black';
 
       $scope.showDefinition = function (verbName) {
-        var verbData = dictionaryService.getVerbData(verbName, $scope.selectedTense);
+        var verbData = dictionaryService.getVerbData(verbName, $scope.selectedTense, $scope.selectedForm, $scope.selectedType);
         $scope.verbName = verbName;
         $scope.meaning = verbData.meaning;
         $scope.conjugations = verbData.conjugations;
@@ -54,14 +56,24 @@
 
       $scope.switchTense = function (tense) {
         $scope.selectedTense = tense;
-        $scope.boardVerbs = dictionaryService.getSwitchedVerbs($scope.selectedTense, $scope.numberOfVerbs);
+        $scope.boardVerbs = dictionaryService.getSwitchedVerbs($scope.selectedTense, $scope.selectedForm, $scope.selectedType, $scope.numberOfVerbs);
+      };
+
+      $scope.switchForm = function (form) {
+        $scope.selectedForm = form;
+        $scope.boardVerbs = dictionaryService.getSwitchedVerbs($scope.selectedTense, $scope.selectedForm, $scope.selectedType, $scope.numberOfVerbs);
+      };
+
+      $scope.switchType = function (type) {
+        $scope.selectedType = type;
+        $scope.boardVerbs = dictionaryService.getSwitchedVerbs($scope.selectedTense, $scope.selectedForm, $scope.selectedType, $scope.numberOfVerbs);
       };
 
       $scope.resetBoard = function (numberOfVerbs) {
         if (numberOfVerbs !== undefined) {
           $scope.numberOfVerbs = numberOfVerbs;
         }
-        $scope.boardVerbs = dictionaryService.getVerbs($scope.selectedTense, $scope.numberOfVerbs);
+        $scope.boardVerbs = dictionaryService.getVerbs($scope.selectedTense, $scope.selectedForm, $scope.selectedType, $scope.numberOfVerbs);
         $scope.boardLayout = boardService.layout($scope.numberOfVerbs);
         $scope.ships = boardService.ships();
         verbsTried = [],
@@ -93,23 +105,23 @@
         allVerbs = dictionaryService.getProvidedVerbs();
         enteredChar = $scope.inputText.slice(-1);
 
-        if (enteredChar === "A" || enteredChar === "E" || enteredChar === "I" || enteredChar === "O" || enteredChar === "U") {
-          $scope.inputText = $scope.inputText.slice(0, -1);
-          switch (enteredChar) {
-            case "A" : $scope.inputText = $scope.inputText + "á";
-              break;
-            case "E" : $scope.inputText = $scope.inputText + "é";
-              break;
-            case "I" : $scope.inputText = $scope.inputText + "í";
-              break;
-            case "O" : $scope.inputText = $scope.inputText + "ó";
-              break;
-            case "U" : $scope.inputText = $scope.inputText + "ú";
-              break;
-          }
-        }
+        // if (enteredChar === "A" || enteredChar === "E" || enteredChar === "I" || enteredChar === "O" || enteredChar === "U") {
+        //   $scope.inputText = $scope.inputText.slice(0, -1);
+        //   switch (enteredChar) {
+        //     case "A" : $scope.inputText = $scope.inputText + "á";
+        //       break;
+        //     case "E" : $scope.inputText = $scope.inputText + "é";
+        //       break;
+        //     case "I" : $scope.inputText = $scope.inputText + "í";
+        //       break;
+        //     case "O" : $scope.inputText = $scope.inputText + "ó";
+        //       break;
+        //     case "U" : $scope.inputText = $scope.inputText + "ú";
+        //       break;
+        //   }
+        // }
 
-        $scope.inputText = $scope.inputText.toLowerCase();
+        // $scope.inputText = $scope.inputText.toLowerCase(); // ?
         $scope.filteredInputText = $scope.inputText;
 
         if (allVerbs.indexOf($scope.filteredInputText) !== -1) {
@@ -222,47 +234,6 @@
           }, delay, count).then(function () {$scope.showBoard = true;});
         }
       };
-      $scope.currentPrompt = '';
-      $scope.userAnswer = '';
-      $scope.selectedCell = null;
-
-      // Function to handle cell click
-      $scope.cellClick = function (cell, row, col) {
-        $scope.selectedCell = { row: row, col: col };
-        $scope.currentPrompt = generatePromptForCell(cell);
-        $('#promptModal').modal('show');
-      };
-
-      // Function to check the user's answer
-      $scope.checkAnswer = function () {
-        if ($scope.userAnswer === getCorrectAnswerForCell($scope.selectedCell)) {
-          alert('Correct!');
-          updateCellAsCorrect($scope.selectedCell);
-        } else {
-          alert('Incorrect. Try again.');
-        }
-        $scope.userAnswer = '';
-        $('#promptModal').modal('hide');
-      };
-
-      // Generate the prompt for the given cell
-      function generatePromptForCell(cell) {
-        // Replace this with the actual logic to generate the prompt
-        return `Conjugate the verb ${cell.verb} in ${cell.tense}`;
-      }
-
-      // Get the correct answer for the given cell
-      function getCorrectAnswerForCell(cell) {
-        // Replace this with the actual logic to get the correct answer
-        return 'correctAnswer';
-      }
-
-      // Update the cell as correct
-      function updateCellAsCorrect(cell) {
-        // Replace this with the actual logic to update the cell
-        cell.status = 'correct';
-      }
-
     });
 }());
 
