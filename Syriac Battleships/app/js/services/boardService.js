@@ -5,7 +5,7 @@ battleshipsApp.factory('boardService', function () {
   function getLayout (numberOfVerbs) {
     var r, c, layout, newCell;
     layout = { rows: [] };
-    for(r = 0; r < 6; r++) {
+    for(r = 0; r < 10; r++) { // Num rows
       row = [];
       for(c = 0; c < numberOfVerbs; c++) {
         row.push({ row: r, column: c, colour: 'blue', hasShip: false });
