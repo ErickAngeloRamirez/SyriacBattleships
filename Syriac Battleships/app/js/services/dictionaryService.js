@@ -54,6 +54,7 @@
     getParadigm: function getParadigm(type, form, tense, stem, conjugations) {
       const fs = require('fs');
       const filename = `Syriac Battleships/app/js/services/src copy/${type}Paradigm/${stem}.csv`;
+      // const filename = `Syriac Battleships/app/js/services/src copy/strongParadigm/${stem}.csv`;
       fs.readFile(filename, 'utf8', (err, dat) => {
         if(err)
           console.error("Error while opening file");
@@ -93,8 +94,8 @@
         for (const stem of randomDictionarySet) {
             let conjugations = {};
             getParadigm(type, form, tense, stem, conjugations);
-            verbsToReturn.push({ verb: stem, verbs: conjugations });
-            providedVerbs.push(conjugations);
+            verbsToReturn.push({ verb: stem, verbs: Object.values(conjugations) });
+            providedVerbs.push(Object.values(conjugations));
         }
   
         return verbsToReturn;
@@ -116,13 +117,13 @@
         for (const stem of randomDictionarySet) {
           let conjugations = {};
             getParadigm(type, form, tense, stem, conjugations);
-            verbsToReturn.push({ verb: stem, verbs: conjugations });
-            providedVerbs.push(conjugations);
+            verbsToReturn.push({ verb: stem, verbs: Object.values(conjugations) });
+            providedVerbs.push(Object.values(conjugations));
         }
   
         return verbsToReturn;
     },
-    getVerbData: async function (verb, tense, form, type) {
+    getVerbData: function (verb, tense, form, type) {
       var returnVerbData = {};
       returnVerbData.conjugations = {};
       getParadigm(type, form, tense, verb, returnVerbData.conjugations);
