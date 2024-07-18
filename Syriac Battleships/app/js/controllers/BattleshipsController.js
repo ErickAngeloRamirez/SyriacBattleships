@@ -95,14 +95,14 @@
       };
 
       $scope.keyup = function (e) {
-        var allVerbs,
+        var fromGetProvidedVerbs,
           enteredChar;
 
         if (e.keyCode === 13) {
           return;
         }
 
-        allVerbs = dictionaryService.getProvidedVerbs();
+        fromGetProvidedVerbs = dictionaryService.getProvidedVerbs();
         enteredChar = $scope.inputText.slice(-1);
 
         // if (enteredChar === "A" || enteredChar === "E" || enteredChar === "I" || enteredChar === "O" || enteredChar === "U") {
@@ -124,7 +124,7 @@
         // $scope.inputText = $scope.inputText.toLowerCase(); // ?
         $scope.filteredInputText = $scope.inputText;
 
-        if (allVerbs.indexOf($scope.filteredInputText) !== -1) {
+        if (fromGetProvidedVerbs.indexOf($scope.filteredInputText) !== -1) {
           $scope.divTextColor = "green";
         } else {
           $scope.divTextColor = "red";
