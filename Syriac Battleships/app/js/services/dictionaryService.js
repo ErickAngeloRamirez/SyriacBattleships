@@ -1,112 +1,76 @@
 ﻿battleshipsApp.factory('dictionaryService', function () {
 
   var providedVerbs = [],
-    randomDictionarySet = [];
+    randomDictionarySet = [],
+    allVerbs = {};
 
-  async function makeAllVerbs(filename, dictionary) {
-    try {
-      const response = await fetch(filename);
-      const csvText = await response.text();
-      const rows = csvText.trim().split('\n').map(row => row.split(','));
-      
-      const headers = rows.shift();  // First row is the header
-
-      rows.forEach(row => {
-          const type = row.shift();
-          const stem = row.shift();
-          if (!dictionary[type]) { 
+  function makeAllVerbs(filename, dictionary) {
+      const fs = require('fs');
+      fs.readFile(filename, 'utf8', (err, dat) => {
+        if(err)
+          console.error("Error while opening file");
+        let lines = [];
+        lines = dat.split('\n'); // String(dat)
+        // Skip the header line
+        lines.slice(1).forEach(line => {
+          let [type, stem, pʿal, ethpʿel, paʿʿel, ethpaʿʿal, aphʿel, ettaphʿal] = line.split(',');
+          // Check if the verb form is TRUE
+          let verbForms = [];
+          if (pʿal == 'TRUE') {
+            verbForms.push('pʿal');
+          }
+          if (ethpʿel == 'TRUE') {
+            verbForms.push('ethpʿel');
+          }
+          if (paʿʿel == 'TRUE') {
+            verbForms.push('paʿʿel');
+          }
+          if (ethpaʿʿal == 'TRUE') {
+            verbForms.push('ethpaʿʿal');
+          }
+          if (aphʿel == 'TRUE') {
+            verbForms.push('aphʿel');
+          }
+          if (ettaphʿal == 'TRUE') {
+            verbForms.push('ettaphʿal');
+          }
+          // Initialize the type and stem entries if they don't exist
+          if (!dictionary[type]) {
               dictionary[type] = {};
           }
-          dictionary[type][stem] = [];
-
-          row.forEach((value, index) => {
-              if (value === "TRUE") {
-                  dictionary[type][stem].push(headers[index + 2].trim());
-              }
-          });
+          if (!dictionary[type][stem]) {
+              dictionary[type][stem] = [];
+          }
+          // Populate the dictionary
+          dictionary[type][stem] = verbForms;
+        });
+        console.log('Dictionary:', dictionary);
       });
-    } catch (error) {
-        console.error('Error fetching verbs:', error);
-    }
-  };
-
-  (async function() {
-      var allVerbs = {};
-      await makeAllVerbs("Syriac Battleships/app/js/services/src copy/syriacVerbs.csv", allVerbs);
-      console.log(allVerbs);
-  })();
-
-  // // Constant Global Variables
-  // const ALL_VERBS = {};   // to be filled by the makeAllVerbs function
-  // const ALL_TYPES = ["strong", "I’nun", "I’alaph", "I’yod", "II’alaph", "hollow", "geminate", 
-  //                   "III’weak", "irregular"];
-  // const ALL_FORMS = ["pʿal", "ethpʿel", "paʿʿel", "ethpaʿʿal", "aphʿel", "ettaphʿal"];  // TODO: add "quadraliteral"?
-  // const ALL_TENSES = ["perfect", "imperfect", "imperative", "active-participle", "passive-participle", "infinitive"];
-  // const ALL_PGNs = ["1CS", "1CP", "2MS", "2FS", "2MP", "2FP", "3MS", "3FS", "3MP", "3FP", "MS", "FS", "MP", "FP", ""];
-
-  // // Regular Global Variables
-  // let QUESTIONS = [];   // array to store the generated practice problems
-  // let USER_SOLUTIONS = [];  // array to store user answers to QUESTIONS
-  // let CORRECT_SOLUTIONS = [];   // array to store the correct answers to QUESTIONS 
-  // let CORRECTIONS = [];   // array to store whether USER_SOLUTIONS are correct, or incorrect
-  // let NUM_QUESTIONS = 1;    // number of problems to generate, defaults to 1
-  // let FILTERS = [];     // array to store user-picked filters, specifying what problem types to generate
-  // let MAX_NUM_QUESTIONS = 0; // maximum possible number of problems given FILTERS
-  // let CAN_GENERATE_QUESTIONS = true; // boolean indicating whether any problems can be generated given FILTERS
-  // let VERBS = {};    // array to store the usable verbs, given FILTERS
-  // let TYPES = [];      // array to store usable verb types, given FILTERS
-  // let TYPES_with_PROBS = [];    // similar to TYPES, but each element is also paired to a probability
-  // let FORMS = [];       // array to store usable verb forms, given FILTERS
-  // let FORMS_with_PROBS = [];    // similar to FORMS, but each element is also paired to a probability
-  // let TENSES = [];      // array to store usable verb tenses, given FILTERS
-  // let TENSES_with_PROBS = [];   // similar to TENSES, but each element is also paired to a probability
-  // let PGN = ALL_PGNs;   // array to store usable number-person-gender combos
-
-  // /**
-  //  * class: Prompt
-  //  * 
-  //  * A Prompt object stores the information needed to generate a problem, which includes a stem, its type, form, 
-  //  * tense, and number-gender-person (pgn). By default, all of a Prompt's parameters are set to null. 
-  //  */
-  // class Prompt {
-  //   constructor() {
-  //       this.stem = null;
-  //       this.type = null;
-  //       this.form = null;
-  //       this.tense = null;
-  //       this.pgn = null;
-  //   }
-  // }
+  }
+  makeAllVerbs("Syriac Battleships/app/js/services/src copy/syriacVerbs.csv", allVerbs);
 
   return {
 
-    getParadigm: async function getParadigm(type, form, tense, stem) {
+    getParadigm: function getParadigm(type, form, tense, stem, conjugations) {
+      const fs = require('fs');
       const filename = `Syriac Battleships/app/js/services/src copy/${type}Paradigm/${stem}.csv`;
-      try {
-          const response = await fetch(filename);
-          const csvText = await response.text();
-          const rows = csvText.trim().split('\n').map(row => row.split(','));
-          
-          const paradigm = [];
-          const header = rows.shift();
-          const formsHeader = header.slice(2);
-
-          for (const row of rows) {
-              const rowTense = row.shift();
-              if (rowTense !== tense) continue;
-
-              const rowPGN = row.shift();
-              for (let idx = 0; idx < formsHeader.length; idx++) {
-                  if (formsHeader[idx] === form) {
-                      const conjugation = row[idx + 2];
-                      paradigm.push(conjugation);
-                  }
-              }
+      fs.readFile(filename, 'utf8', (err, dat) => {
+        if(err)
+          console.error("Error while opening file");
+        let lines = [];
+        lines = dat.split('\n');
+        const headers = lines[0].split(',');
+        const formIndex = headers.indexOf(form);
+        // const conjugations = {};
+        lines.slice(1).forEach(line => {
+          const parts = line.split(',');
+          const fileTense = parts[0];
+          const filePGN = parts[1];
+          if (fileTense === tense) {
+            conjugations[filePGN] = parts[formIndex];
           }
-          return paradigm;
-      } catch (error) {
-          console.error('Error fetching paradigm:', error);
-      }
+        });
+      });
     },
 
       // // Label each row's conjugations using the corresponding verb forms
@@ -116,7 +80,7 @@
       //         return acc;
       //     }, {});
 
-    getVerbs: async function getVerbs(tense, form, type, number) {
+    getVerbs: function getVerbs(tense, form, type, number) {
         var verbsToReturn = [];
         providedVerbs = [];
   
@@ -127,9 +91,10 @@
         randomDictionarySet = getRandomSubarray(stems, number);
   
         for (const stem of randomDictionarySet) {
-            const paradigm = await getParadigm(type, form, tense, stem);
-            verbsToReturn.push({ verb: stem, verbs: paradigm });
-            providedVerbs.push(paradigm);
+            let conjugations = {};
+            getParadigm(type, form, tense, stem, conjugations);
+            verbsToReturn.push({ verb: stem, verbs: conjugations });
+            providedVerbs.push(conjugations);
         }
   
         return verbsToReturn;
@@ -149,16 +114,18 @@
         randomDictionarySet = getRandomSubarray(stems, number);
   
         for (const stem of randomDictionarySet) {
-            const paradigm = await getParadigm(type, form, tense, stem);
-            verbsToReturn.push({ verb: stem, verbs: paradigm });
-            providedVerbs.push(paradigm);
+          let conjugations = {};
+            getParadigm(type, form, tense, stem, conjugations);
+            verbsToReturn.push({ verb: stem, verbs: conjugations });
+            providedVerbs.push(conjugations);
         }
   
         return verbsToReturn;
     },
     getVerbData: async function (verb, tense, form, type) {
       var returnVerbData = {};
-      returnVerbData.conjugations = await getParadigm(type, form, tense, verb);
+      returnVerbData.conjugations = {};
+      getParadigm(type, form, tense, verb, returnVerbData.conjugations);
       return returnVerbData;
     }
   };
