@@ -6,11 +6,13 @@
 
   function makeAllVerbs(filename, dictionary) {
       const fs = require('fs');
-      fs.readFile(filename, 'utf8', (err, dat) => {
-        if(err)
-          console.error("Error while opening file");
+      fs.readFileSync(filename, 'utf8', (err, dat) => {
+        if(err) {
+          console.error("Error while opening file", err);
+          return;
+        }
         let lines = [];
-        lines = dat.split('\n'); // String(dat)
+        lines = dat.split('\n').filter(line => line.trim() !== ''); // String(dat)
         // Skip the header line
         lines.slice(1).forEach(line => {
           let [type, stem, pʿal, ethpʿel, paʿʿel, ethpaʿʿal, aphʿel, ettaphʿal] = line.split(',');
@@ -55,7 +57,7 @@
       const fs = require('fs');
       const filename = `Syriac Battleships/app/js/services/src copy/${type}Paradigm/${stem}.csv`;
       // const filename = `Syriac Battleships/app/js/services/src copy/strongParadigm/${stem}.csv`;
-      fs.readFile(filename, 'utf8', (err, dat) => {
+      fs.readFileSync(filename, 'utf8', (err, dat) => {
         if(err)
           console.error("Error while opening file");
         let lines = [];
