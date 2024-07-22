@@ -76,7 +76,7 @@
     getProvidedVerbs: function () {
       return providedVerbs;
     },
-    getSwitchedVerbs: async function getVerbs (tense, form, type, number) {
+    getSwitchedVerbs: function getVerbs (tense, form, type, number) {
       var verbsToReturn = [];
         providedVerbs = [];
   
