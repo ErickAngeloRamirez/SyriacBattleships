@@ -4,78 +4,48 @@
     randomDictionarySet = [],
     allVerbs = {};
 
+  const fs = require('fs');
+
   function makeAllVerbs(filename, dictionary) {
-      const fs = require('fs');
-      fs.readFileSync(filename, 'utf8', (err, dat) => {
-        if(err) {
-          console.error("Error while opening file", err);
-          return;
+      const data = fs.readFileSync(filename, 'utf8');
+      const lines = data.split('\n').filter(line => line.trim() !== ''); // String(dat)
+      // Skip the header line
+      lines.slice(1).forEach(line => {
+        let [type, stem, pʿal, ethpʿel, paʿʿel, ethpaʿʿal, aphʿel, ettaphʿal] = line.split(',');
+        // Check if the verb form is TRUE
+        let verbForms = [];
+        if (pʿal == 'TRUE') {
+          verbForms.push('pʿal');
         }
-        let lines = [];
-        lines = dat.split('\n').filter(line => line.trim() !== ''); // String(dat)
-        // Skip the header line
-        lines.slice(1).forEach(line => {
-          let [type, stem, pʿal, ethpʿel, paʿʿel, ethpaʿʿal, aphʿel, ettaphʿal] = line.split(',');
-          // Check if the verb form is TRUE
-          let verbForms = [];
-          if (pʿal == 'TRUE') {
-            verbForms.push('pʿal');
-          }
-          if (ethpʿel == 'TRUE') {
-            verbForms.push('ethpʿel');
-          }
-          if (paʿʿel == 'TRUE') {
-            verbForms.push('paʿʿel');
-          }
-          if (ethpaʿʿal == 'TRUE') {
-            verbForms.push('ethpaʿʿal');
-          }
-          if (aphʿel == 'TRUE') {
-            verbForms.push('aphʿel');
-          }
-          if (ettaphʿal == 'TRUE') {
-            verbForms.push('ettaphʿal');
-          }
-          // Initialize the type and stem entries if they don't exist
-          if (!dictionary[type]) {
-              dictionary[type] = {};
-          }
-          if (!dictionary[type][stem]) {
-              dictionary[type][stem] = [];
-          }
-          // Populate the dictionary
-          dictionary[type][stem] = verbForms;
-        });
-        console.log('Dictionary:', dictionary);
+        if (ethpʿel == 'TRUE') {
+          verbForms.push('ethpʿel');
+        }
+        if (paʿʿel == 'TRUE') {
+          verbForms.push('paʿʿel');
+        }
+        if (ethpaʿʿal == 'TRUE') {
+          verbForms.push('ethpaʿʿal');
+        }
+        if (aphʿel == 'TRUE') {
+          verbForms.push('aphʿel');
+        }
+        if (ettaphʿal == 'TRUE') {
+          verbForms.push('ettaphʿal');
+        }
+        // Initialize the type and stem entries if they don't exist
+        if (!dictionary[type]) {
+            dictionary[type] = {};
+        }
+        if (!dictionary[type][stem]) {
+            dictionary[type][stem] = [];
+        }
+        // Populate the dictionary
+        dictionary[type][stem] = verbForms;
       });
   }
   makeAllVerbs("Syriac Battleships/app/js/services/src copy/syriacVerbs.csv", allVerbs);
 
   return {
-
-    getParadigm: function getParadigm(type, form, tense, stem, conjugations) {
-      const fs = require('fs');
-      const filename = `Syriac Battleships/app/js/services/src copy/${type}Paradigm/${stem}.csv`;
-      // const filename = `Syriac Battleships/app/js/services/src copy/strongParadigm/${stem}.csv`;
-      fs.readFileSync(filename, 'utf8', (err, dat) => {
-        if(err)
-          console.error("Error while opening file");
-        let lines = [];
-        lines = dat.split('\n');
-        const headers = lines[0].split(',');
-        const formIndex = headers.indexOf(form);
-        // const conjugations = {};
-        lines.slice(1).forEach(line => {
-          const parts = line.split(',');
-          const fileTense = parts[0];
-          const filePGN = parts[1];
-          if (fileTense === tense) {
-            conjugations[filePGN] = parts[formIndex];
-          }
-        });
-      });
-    },
-
       // // Label each row's conjugations using the corresponding verb forms
       // Object.keys(paradigm).forEach(rowKey => {
       //     paradigm[rowKey] = formsHeader.reduce((acc, form, idx) => {
@@ -132,6 +102,24 @@
       return returnVerbData;
     }
   };
+
+  function getParadigm(type, form, tense, stem, conjugations) {
+    const filename = `Syriac Battleships/app/js/services/src copy/${type}Paradigm/${stem}.csv`;
+    // const filename = `Syriac Battleships/app/js/services/src copy/strongParadigm/${stem}.csv`;
+    const data = fs.readFileSync(filename, 'utf8');
+    const lines = data.split('\n').filter(line => line.trim() !== '');
+    const headers = lines[0].split(',');
+    const formIndex = headers.indexOf(form);
+    // const conjugations = {};
+    lines.slice(1).forEach(line => {
+      const parts = line.split(',');
+      const fileTense = parts[0];
+      const filePGN = parts[1];
+      if (fileTense === tense) {
+        conjugations[filePGN] = parts[formIndex];
+      }
+    });
+  }
 
   function getRandomSubarray(arr, size) {
     var shuffled = arr.slice(0), i = arr.length, temp, index;
